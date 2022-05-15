@@ -1,0 +1,8 @@
+---
+#vars for docker
+required_pckgs:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - software-properties-common
+  - gnupg

@@ -1,0 +1,39 @@
+---
+- name: Ensure of old Docker versions
+  package: 
+    name: 
+      - docker
+      - docker-engine
+    state: absent
+
+- name: Install required packages
+  apt:
+    name: "{{ required_pckgs }}"
+    state: present
+    update_cache: true
+
+- name: Add Docker GPG apt key
+  apt_key:
+    url: "{{ docker_apt_gpg_key }}"
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: "{{ docker_apt_repository }}"
+    state: present
+
+- name: Install Docker
+  apt: 
+    name: "{{ docker_package }}"
+    state: "{{ docker_package_state }}"
+    update_cache: true
+  notify: restart docker
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Ensure Docker is started at boot
+  service: 
+    name: docker
+    state: "{{ docker_service_state }}"
+    enabled: "{{ docker_service_enabled }}"
+
+# tasks file for docker
