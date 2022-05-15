@@ -1,0 +1,27 @@
+---
+- name: Make docker.service.d file
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+    mode: '0755'
+
+- name: Touch a http-proxy file
+  file:
+    path: /etc/systemd/system/docker.service.d/http-proxy.conf
+    state: touch
+    mode: u=rw,g=r,o=r
+
+# Poland proxy     
+- name: Append http-proxy to file
+  lineinfile: 
+    path: /etc/systemd/system/docker.service.d/http-proxy.conf
+    line: "{{ item.line }}"
+  loop:
+    - { line: '[Service]' }
+    - { line: '# Poland free proxy' }
+    - { line: 'Environment="HTTP_PROXY=http://{{ docker_proxy_ip }}/' } 
+
+- name: Reload systemctl daemon
+  systemd:
+    daemon_reload: true
+  notify: restart docker
