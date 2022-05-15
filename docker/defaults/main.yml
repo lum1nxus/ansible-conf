@@ -1,15 +1,25 @@
 ---
+#Docker edition options
 docker_edition: 'ce'
 docker_package: "docker-{{ docker_edition }}"
 docker_package_state: present
 docker_repo_url: https://download.docker.com/linux
 
+# Docker service options
 docker_service_state: started
 docker_service_enabled: true
 docker_restart_handler_state: restarted
 
+# Docker ubuntu options
 docker_apt_release_channel: stable
 docker_apt_repository: "deb {{ docker_repo_url }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
 docker_apt_ignore_key_error: true
 docker_apt_gpg_key: "{{ docker_repo_url }}/{{ ansible_distribution | lower }}/gpg"
+
+# Docker-Compose options
+docker_install_compose: true
+docker_compose_version: v2.5.0
+docker_compose_arch: x86_64
+docker_compose_url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ docker_compose_arch }}"
+docker_compose_path: /usr/local/bin/docker-compose
 
