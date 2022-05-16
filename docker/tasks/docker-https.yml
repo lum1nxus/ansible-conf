@@ -19,7 +19,7 @@
   loop:
     - { line: '[Service]' }
     - { line: '# Poland free proxy' }
-    - { line: 'Environment="HTTP_PROXY=http://{{ docker_proxy_ip }}/"' } 
+    - { line: 'Environment="HTTPS_PROXY=http://{{ docker_proxy_ip }}/"' } 
 
 - name: Reload systemctl daemon & Restart Docker
   systemd:

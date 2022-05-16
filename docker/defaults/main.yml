@@ -24,6 +24,6 @@ docker_compose_url: "https://github.com/docker/compose/releases/download/{{ dock
 docker_compose_path: /usr/local/bin/docker-compose
 
 # Docker proxy options
-docker_install_proxy: true
-docker_proxy_ip: 80.48.119.28:8080
+docker_install_proxy: false
+docker_proxy_ip: 64:235:204:107:3128
 
