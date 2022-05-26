@@ -27,3 +27,5 @@ docker_compose_path: /usr/local/bin/docker-compose
 docker_install_proxy: false
 docker_proxy_ip: 64:235:204:107:3128
 
+#Pip install modules
+pip_install: true

@@ -1,0 +1,7 @@
+---
+- name: Install certain python modules for docker
+  pip:
+    name: "{{ item.name }}"
+    state: present
+  with_items:
+  - { name: docker-compose}
