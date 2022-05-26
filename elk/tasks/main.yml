@@ -2,14 +2,15 @@
 - name: Copy Docker-Compose files
   copy:
     src: ./{{ item }}
-    dest: ./{{ item }}
+    dest: ./go-grab-log{{ item }}
   loop:
   - docker-compose.yml
+  - elk
 
 # Docker_compose ansible module is required!
 - name: Deploy Docker-Compose stack
   docker_compose:
-    project_src: .
+    project_src: ./go-grab-log
     files:
     - docker-compose.yml
   vars:

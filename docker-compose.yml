@@ -4,7 +4,7 @@ services:
 
   elasticsearch:
     build:
-      context: ./elasticsearch/files
+      context: ./elk/elasticsearch/files
     container_name: elasticsearch
     environment:
       - node.name=elasticsearch
@@ -21,10 +21,26 @@ services:
       - esdata1:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+    networks:
+      - elk
+
+  logstash:
+    build:
+      context: ./elk/logstash/files
+    volumes:
+      - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+    ports:
+      - 5046:5046
+    environment:
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk
 
   kibana:
     build:
-      context: ./kibana/files
+      context: ./elk/kibana/files
     container_name: kibana
     environment:
       ELASTICSEARCH_URL: "http://elasticsearch:9200"
@@ -32,7 +48,13 @@ services:
       - 5601:5601
     depends_on:
       - elasticsearch
+    networks:
+      - elk
 
 volumes:
   esdata1:
     driver: local
+
+networks:
+  elk:
+    driver: bridge
