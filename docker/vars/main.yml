@@ -6,3 +6,4 @@ required_pckgs:
   - curl
   - software-properties-common
   - gnupg
+  - python3-pip
