@@ -1,0 +1,16 @@
+---
+- name: Copy Docker-Compose files
+  copy:
+    src: ./{{ item }}
+    dest: ./{{ item }}
+  loop:
+  - docker-compose.yml
+
+# Docker_compose ansible module is required!
+- name: Deploy Docker-Compose stack
+  docker_compose:
+    project_src: .
+    files:
+    - docker-compose.yml
+  vars:
+    ansible_python_interpreter: /bin/python3    
