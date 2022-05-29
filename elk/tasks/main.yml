@@ -1,17 +1,28 @@
 ---
+- name: Create directory for docker-compose
+  file:
+    path: ./go-grab-log
+    state: directory
+    mode: '0755'
+
 - name: Copy Docker-Compose files
   copy:
     src: ./{{ item }}
-    dest: ./go-grab-log{{ item }}
+    dest: ./go-grab-log/{{ item }}
   loop:
-  - docker-compose.yml
-  - elk
+    - docker-compose.yml
+    - elk/elasticsearch/files/
+    - elk/logstash/
+    - elk/kibana/files/
+    - .env
 
 # Docker_compose ansible module is required!
 - name: Deploy Docker-Compose stack
+#  become: true
   docker_compose:
-    project_src: ./go-grab-log
+    project_src: ./go-grab-log/
     files:
-    - docker-compose.yml
-  vars:
-    ansible_python_interpreter: /bin/python3    
+      - docker-compose.yml
+#  vars:
+#    ansible_python_interpreter: /bin/python3   
+# tags: never 
