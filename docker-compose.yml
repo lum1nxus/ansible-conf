@@ -8,17 +8,18 @@ services:
     container_name: elasticsearch
     environment:
       - node.name=elasticsearch
-      - discovery.seed_hosts=elasticsearch
-      - cluster.initial_master_nodes=elasticsearch
-      - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_REPORTING_ENABLED=false
+      - XPACK_MONITORING_ENABLED=false
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - esdata1:/usr/share/elasticsearch/data
+      - ./elk/elasticsearch/files/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+      - esdata1:/usr/share/elasticsearch/data:z
     ports:
       - 9200:9200
     networks:
@@ -33,8 +34,10 @@ services:
     ports:
       - 5046:5046
     environment:
-      LS_JAVA_OPTS: -Xms256m -Xmx256m
-      XPACK_MONITORING_ENABLED:: "false"
+      - "LS_JAVA_OPTS= -Xms256m -Xmx256m"
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_REPORTING_ENABLED=false
+      - XPACK_MONITORING_ENABLED=false
     depends_on:
       - elasticsearch
     networks:
@@ -46,6 +49,8 @@ services:
     container_name: kibana
     environment:
       ELASTICSEARCH_URL: "http://elasticsearch:9200"
+    volumes:
+      - ./elk/kibana/files/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z  
     ports:
       - 5601:5601
     depends_on:
