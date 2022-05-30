@@ -1,36 +1,38 @@
 ---
-- name: Create directory for docker-compose
-  file:
-    path: ./go-grab-log
-    state: directory
-    mode: '0755'
+- block: # HOST(ELK) 
+    - name: Create directory for docker-compose
+      file:
+        path: ./go-grab-log
+        state: directory
+        mode: '0755'
 
-- name: Set vm.max_map_count to 262144 in sysctl
-  sysctl: 
-    name: "{{ item.key }}"
-    value: "{{ item.value }}"
-    reload: yes
-  with_items:
-    - { key: "vm.max_map_count", value: "262144" }
+    - name: Set vm.max_map_count to 262144 in sysctl
+      sysctl: 
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        reload: yes
+      with_items:
+        - { key: "vm.max_map_count", value: "262144" }
 
-- name: Copy Docker-Compose files
-  copy:
-    src: ./{{ item }}
-    dest: ./go-grab-log/{{ item }}
-  loop:
-    - docker-compose.yml
-    - elk/elasticsearch/files/
-    - elk/logstash/
-    - elk/kibana/files/
-    - .env
+    - name: Copy Docker-Compose files
+      copy:
+        src: ./{{ item }}
+        dest: ./go-grab-log/{{ item }}
+      loop:
+        - docker-compose.yml
+        - elk/elasticsearch/files/
+        - elk/logstash/
+        - elk/kibana/files/
+        - .env
 
-# Docker_compose ansible module is required!
-- name: Deploy Docker-Compose stack
-#  become: true
-  docker_compose:
-    project_src: ./go-grab-log/
-    files:
-      - docker-compose.yml  
+    # Docker_compose ansible module is required!
+    - name: Deploy Docker-Compose stack
+    #  become: true
+      docker_compose:
+        project_src: ./go-grab-log/
+        files:
+          - docker-compose.yml  
+  when: "'ELK_master' in group_names"
 #  vars:
 #    ansible_python_interpreter: /bin/python3   
 # tags: never 
