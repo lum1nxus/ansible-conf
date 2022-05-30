@@ -41,7 +41,17 @@
 # leading 0s:
 
 #db-[99:101]-node.example.com
+[ELK_master]
+linux1 ansible_host=188.120.226.32 
 
-[servers]
-linux1 ansible_host=188.120.226.32 ansible_user=root
- 
+[Filebeat_slave]
+linux2 ansible_host=5.188.128.154
+
+[ALL:children]
+ELK_master
+Filebeat_slave
+
+[ALL:vars]
+ansible_user=root
+
+
