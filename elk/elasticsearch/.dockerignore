@@ -1,0 +1,6 @@
+# Ignore during Docker build process 
+Dockerfile
+.dockerignore
+
+# Ignore OS artifacts
+**/.DS_Store
