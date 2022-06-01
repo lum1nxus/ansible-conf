@@ -2,66 +2,76 @@ version: '3.8'
 
 services:
 
+  # The 'setup' service runs a one-off script which initializes the
+  # 'logstash_internal' and 'kibana_system' users inside Elasticsearch with the
+  # values of the passwords defined in the '.env' file.
+  
+  setup:
+    build:
+      context: elk/setup/
+    init: true
+    volumes:
+      - setup:/state:Z
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+    networks:
+      - elk
+
   elasticsearch:
     build:
-      context: ./elk/elasticsearch/files
-    container_name: elasticsearch
-    environment:
-      - node.name=elasticsearch
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - XPACK_SECURITY_ENABLED=false
-      - XPACK_REPORTING_ENABLED=false
-      - XPACK_MONITORING_ENABLED=false
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      context: elk/elasticsearch/
     volumes:
-      - ./elk/elasticsearch/files/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
-      - esdata1:/usr/share/elasticsearch/data:z
+      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z
+      - elasticsearch:/usr/share/elasticsearch/data:z
     ports:
-      - 9200:9200
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      discovery.type: single-node
     networks:
       - elk
 
   logstash:
     build:
-      context: ./elk/logstash/files
-    container_name: logstash
+      context: elk/logstash/
     volumes:
+      - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
       - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
     ports:
-      - 5046:5046
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
     environment:
-      - "LS_JAVA_OPTS= -Xms256m -Xmx256m"
-      - XPACK_SECURITY_ENABLED=false
-      - XPACK_REPORTING_ENABLED=false
-      - XPACK_MONITORING_ENABLED=false
-    depends_on:
-      - elasticsearch
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     networks:
       - elk
+    depends_on:
+      - elasticsearch
 
   kibana:
     build:
-      context: ./elk/kibana/files
-    container_name: kibana
-    environment:
-      ELASTICSEARCH_URL: "http://elasticsearch:9200"
+      context: elk/kibana/
     volumes:
-      - ./elk/kibana/files/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z  
+      - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
-      - 5601:5601
-    depends_on:
-      - elasticsearch
+      - "5601:5601"
+    environment:
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
       - elk
-
-volumes:
-  esdata1:
-    driver: local
+    depends_on:
+      - elasticsearch
 
 networks:
   elk:
     driver: bridge
+
+volumes:
+  setup:
+  elasticsearch:
