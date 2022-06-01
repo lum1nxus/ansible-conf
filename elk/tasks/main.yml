@@ -20,14 +20,14 @@
         dest: ./go-grab-log/{{ item }}
       loop:
         - docker-compose.yml
-        - elk/elasticsearch/files/
+        - elk/elasticsearch/
         - elk/logstash/
-        - elk/kibana/files/
+        - elk/kibana/
+        - elk/setup/
         - .env
 
     # Docker_compose ansible module is required!
     - name: Deploy Docker-Compose stack
-    #  become: true
       docker_compose:
         project_src: ./go-grab-log/
         files:
@@ -35,4 +35,3 @@
   when: "'ELK_master' in group_names"
 #  vars:
 #    ansible_python_interpreter: /bin/python3   
-# tags: never 
