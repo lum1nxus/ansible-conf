@@ -1,0 +1,11 @@
+---
+- name: Install Nginx Web Server 
+  apt:
+    name: "{{ item.name }}"
+    state: present
+  with_items:
+    - { name: nginx }
+    - { name: apache2-utils}
+  notify:
+    - nginx systemd
+
