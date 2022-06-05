@@ -1,4 +1,5 @@
 ---
+# Docker proxy install task
 - name: Make docker.service.d file
   file:
     path: /etc/systemd/system/docker.service.d

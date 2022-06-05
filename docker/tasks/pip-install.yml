@@ -1,4 +1,5 @@
 ---
+# Install docker-compose pip module
 - name: Install certain python modules for docker
   pip:
     name: "{{ item.name }}"
