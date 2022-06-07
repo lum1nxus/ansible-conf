@@ -31,7 +31,34 @@
       docker_compose:
         project_src: ./go-grab-log/
         files:
-          - docker-compose.yml  
+          - docker-compose.yml      
   when: "'ELK_master' in group_names"
-#  vars:
-#    ansible_python_interpreter: /bin/python3   
+
+- block: # Agent(Filebeat)
+    - name: Create directory for docker-compose
+      file:
+        path: ./go-grab-log
+        state: directory
+        mode: '0755'
+
+    - name: Copy Docker-Compose files
+      copy:
+        src: "{{ item.src }}"
+        dest: ./go-grab-log/{{ item.dest }}
+      with_items:
+        - { src: 'elk/filebeat/filebeat-compose.yml', dest: 'filebeat-compose.yml' } 
+        - { src: 'elk/filebeat/', dest: 'filebeat/'}
+        - { src: '.env', dest: '.env'}
+    
+    - name: Delete unnecessary files
+      file: 
+        state: absent
+        path: ./go-grab-log/filebeat/filebeat-compose.yml
+
+    # Docker_compose ansible module is required!
+    - name: Deploy Docker-Compose stack
+      docker_compose:
+        project_src: ./go-grab-log/
+        files:
+          - filebeat-compose.yml
+  when: "'Filebeat_slave' in group_names"   
