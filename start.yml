@@ -3,3 +3,4 @@
   roles:
     - { role: docker }
     - { role: elk }
+    - { role: nginx, when: "'ELK_master' in group_names" }
