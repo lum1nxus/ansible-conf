@@ -13,13 +13,16 @@ filebeat.autodiscover:
     - type: docker
       hints.enabled: true
 
-processors:
-  - add_cloud_metadata: ~
+# Disable logging metrics      
+#logging.metrics.enabled: true
 
-output.elasticsearch:
-  hosts: ['http://elasticsearch:9200']
-  username: elastic
-  password: ${ELASTIC_PASSWORD}
+# The period after which to log the internal metrics. The default is 30s.
+logging.metrics.period: 30s      
+      
+output.logstash:
+  hosts: ['188.120.226.32:5044']
+  username: logstash_internal
+  password: ${LOGSTASH_INTERNAL_PASSWORD}
 
 ## HTTP endpoint for health checking
 ## https://www.elastic.co/guide/en/beats/filebeat/current/http-endpoint.html
