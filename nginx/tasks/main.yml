@@ -6,15 +6,21 @@
   with_items:
     - { name: nginx }
     - { name: apache2-utils}
-  notify: nginx systemd
 
+- name: Install certain python modules for nginx
+  pip:
+    name: "{{ item.name }}"
+    state: present
+  with_items:
+  - { name: passlib}
+      
 - name: Copy Kibana Nginx conf
   copy: 
     src: nginx/files/default
     dest: /etc/nginx/sites-available/default
 
 - name: Allow HTTP iptables
-  ansible.builtin.iptables:
+  iptables:
     chain: INPUT
     protocol: tcp
     destination_port: 80
@@ -23,10 +29,11 @@
     comment: Accept new HTTP connections.
 
 - name: Add a user to a password file and ensure permissions are set
-  community.general.htpasswd:
+  htpasswd:
     path: /etc/nginx/.kibana-user
     name: elastic
     password: 'changeme'
     owner: root
-    group: root
+    group: www-data
     mode: 0640
+  notify: nginx systemd  
