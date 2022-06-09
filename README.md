@@ -5,6 +5,7 @@ Used technologies:
 - Ansible
 - Docker, Docker-Compose
 - Elasticsearch, Logstash, Kibana, Filebeat
+- Nginx
 
 ## Project Structure
 
