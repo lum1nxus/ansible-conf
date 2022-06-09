@@ -29,6 +29,11 @@ ansible-elk
 │   │   ├── config
 │   │   │   └── elasticsearch.yml
 │   │   └── Dockerfile
+│   ├── filebeat
+│   │   ├── config
+│   │   │   └── filebeat.yml
+│   │   ├── Dockerfile
+│   │   └── filebeat-compose.yml
 │   ├── kibana
 │   │   ├── config
 │   │   │   └── kibana.yml
@@ -48,8 +53,17 @@ ansible-elk
 │   └── tasks
 │       └── main.yml
 ├── hosts
+├── nginx
+│   ├── defaults
+│   ├── files
+│   │   └── default
+│   ├── handlers
+│   │   └── main.yml
+│   └── tasks
+│       └── main.yml
 ├── README.md
 └── start.yml
+
 ```
 ### docker
 Folder that is used to store components for Docker and Docker-compose install with Ansible.
@@ -73,6 +87,11 @@ File that is defining services, networks, and volumes for a Docker ELK applicati
 *Configuration file*: logstash.yml \
 *Pipeline file*: logstash.conf (specifies on which port to receive packets and the port of service on which to send after optional filtering)
 ___
+### filebeat-compose
+File that is defining filebeat container as agent, which send data to Logstash. \
+*Configuration file*: filebeat.yml \
+*Volume*: Binding docker containers and docker.sock inside filebeat container \
+*Output*: Assigned to Logstash IP, using its credentials 
 ### hosts / start.yml
 *Hosts* is an ansible inventory file, which specifies the IP of the servers where the ELK-Stack will be deployed `ELK_Master`  and client with Filebeat `Filebeat_Slave`. \
 Check the inventory file.
@@ -100,9 +119,18 @@ ansible-playbook -i ./hosts start.yml
 ```
 Upon the initial startup, the `elastic`, `logstash_internal` and `kibana_system` Elasticsearch users are intialized with the values of the passwords defined in the [`.env`](.env) file ("changeme" by default). The first one is the built-in superuser, the other two are used by Kibana and Logstash respectively to communicate with Elasticsearch. This task is only performed during the initial startup of the stack. 
 
+If nginx task is included in [`start.yml`](start.yml) file, **PROCEED TO** [NGINX](#nginx)  
 Give **Kibana** about a minute to initialize, then access the Kibana web UI by opening http://IPOFSERVER:5601 in a web browser and use the following (default) credentials to log in:
 * user: *elastic*
 * password: *changeme*
+
+### Nginx
+Access the Kibana web UI by opening http://IPOFSERVER:80 in a web browser. Put the credentials from the `nginx/defaults/main.yml` file. 
+
+Folder that is used to store components for Nginx install and configure with Ansible. Use credentials from \
+- To check the main task file navigate to the `nginx/tasks/main.yml` file.\
+- To view configuration file check the `nginx/files/default` file.
+
 ### Initial setup
 The _"changeme"_ password set by default for all aforementioned users is **unsecure**. For increased security, you can
 reset the passwords of all aforementioned Elasticsearch users to random secrets.
