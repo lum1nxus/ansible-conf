@@ -119,7 +119,8 @@ ansible-playbook -i ./hosts start.yml
 ```
 Upon the initial startup, the `elastic`, `logstash_internal` and `kibana_system` Elasticsearch users are intialized with the values of the passwords defined in the [`.env`](.env) file ("changeme" by default). The first one is the built-in superuser, the other two are used by Kibana and Logstash respectively to communicate with Elasticsearch. This task is only performed during the initial startup of the stack. 
 
-If nginx task is included in [`start.yml`](start.yml) file, **PROCEED TO** [NGINX](#nginx)  
+If nginx task is included in [`start.yml`](start.yml) file, **PROCEED TO** [Nginx](#nginx).
+
 Give **Kibana** about a minute to initialize, then access the Kibana web UI by opening http://IPOFSERVER:5601 in a web browser and use the following (default) credentials to log in:
 * user: *elastic*
 * password: *changeme*
@@ -127,8 +128,8 @@ Give **Kibana** about a minute to initialize, then access the Kibana web UI by o
 ### Nginx
 Access the Kibana web UI by opening http://IPOFSERVER:80 in a web browser. Put the credentials from the `nginx/defaults/main.yml` file. 
 
-Folder that is used to store components for Nginx install and configure with Ansible. Use credentials from \
-- To check the main task file navigate to the `nginx/tasks/main.yml` file.\
+Folder that is used to store components for Nginx install and configure with Ansible. 
+- To check the main task file navigate to the `nginx/tasks/main.yml` file.
 - To view configuration file check the `nginx/files/default` file.
 
 ### Initial setup
@@ -187,8 +188,7 @@ allows you to send content via TCP:
 
 ```sh
 # Using BSD netcat (Debian, Ubuntu, MacOS system, ...)
-cat /path/to/logfile.log | nc -q0 localhost 5000
-echo "message" | nc -u localhost 5000
+echo "message" | nc localhost 5000
 ```
 
 

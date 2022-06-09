@@ -31,8 +31,8 @@
 - name: Add a user to a password file and ensure permissions are set
   htpasswd:
     path: /etc/nginx/.kibana-user
-    name: elastic
-    password: 'changeme'
+    name: "{{ htpasswd_user }} "
+    password: "{{ htpasswd_password }}"
     owner: root
     group: www-data
     mode: 0640
